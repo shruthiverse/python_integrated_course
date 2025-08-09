@@ -1,0 +1,28 @@
+# Use Windows Server Core as the base image
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
+
+# Set environment variables
+ENV PYTHON_VERSION=3.11
+ENV PATH="C:\\Python311;C:\\Python311\\Scripts;%PATH%"
+
+# Install Chocolatey (Windows package manager)
+RUN powershell -Command "Set-ExecutionPolicy Bypass -Scope CurrentUser -Force; iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex"
+
+# Install Python and basic tools
+RUN powershell -Command "choco install python --version=%PYTHON_VERSION% -y"
+RUN powershell -Command "choco install git -y"
+RUN powershell -Command "choco install vscode -y"
+RUN powershell -Command "choco install pycharm-community -y"
+
+# Install Python dependencies
+RUN powershell -Command "python -m pip install --upgrade pip"
+RUN powershell -Command "pip install boto3 azure-storage-blob pandas numpy matplotlib seaborn plotly scikit-learn torch fastapi uvicorn django flask requests scipy statsmodels beautifulsoup4 requests-html rpy2 virtualenv"
+
+# Set working directory
+WORKDIR /app
+
+# Copy any additional course files (e.g., sample data) if needed
+# COPY . /app
+
+# Command to keep container running
+CMD ["powershell.exe", "-Command", "Start-Sleep -Seconds 3600"]
